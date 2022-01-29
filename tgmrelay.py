@@ -44,7 +44,7 @@ def get_post(client, message):
     # relay only new messages, for this purpose we store all past messages in db
     if not messages.exists(config["target_chat_id"], message.chat.id, message.message_id):
         # relay message to target chat
-        app.copy_message(config["target_chat_id"], message.chat.id, message.message_id)
+        app.forward_message(config["target_chat_id"], message.chat.id, message.message_id, message.copy)
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.message_id, message.text)
 
