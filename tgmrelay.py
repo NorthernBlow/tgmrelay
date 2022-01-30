@@ -47,7 +47,8 @@ def get_post(client, message):
         app.forward_message(config["target_chat_id"], message.chat.id, message.message_id, message.copy, message.text)
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.message_id, message.text)
-
+        
+###def print_copy_text(message.text, message.copy)
 
 def main():
     try:
