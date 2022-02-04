@@ -4,12 +4,12 @@ import sqlite3
 import json
 
 config = {
-    "name": "tgm_relay",
-    "messages": "messages.db",
-    "api_id": "2843096",
-    "api_hash": "b3fe86810322a24fc277cde79cd318ca",
-    "source_chat_id": -1001442825795,
-    "target_chat_id": -1001245620542,
+    "name": "tgmrelay",
+    "messages": ".db",
+    "api_id": "str",
+    "api_hash": "str",
+    "source_chat_id": *args,
+    "target_chat_id": *args,
 }
 
 class Messages:
