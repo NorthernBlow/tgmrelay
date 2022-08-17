@@ -1,0 +1,5 @@
+/.db
+/tgmrelay.session-journal
+/tgmrelay.session
+/messages.db
+/env/

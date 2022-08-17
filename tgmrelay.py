@@ -5,11 +5,11 @@ import json
 
 config = {
     "name": "tgmrelay",
-    "messages": ".db",
-    "api_id": "str",
-    "api_hash": "str",
-    "source_chat_id": *args,
-    "target_chat_id": *args,
+    "messages": "messages.db",
+    "api_id": 2843096,
+    "api_hash": "b3fe86810322a24fc277cde79cd318ca",
+    "source_chat_id": -1001461338272,
+    "target_chat_id": 132669168,
 }
 
 class Messages:
@@ -42,9 +42,9 @@ with app:
 @app.on_message(filters.chat(config["source_chat_id"]))
 def get_post(client, message):
     # relay only new messages, for this purpose we store all past messages in db
-    if not messages.exists(config["target_chat_id"], message.chat.id, message.message_id):
+    if not messages.exists(config["target_chat_id"], config["source_chat_id"], config["messages"]):
         # relay message to target chat
-        app.copy_message(config["target_chat_id"], message.chat.id, message.message_id, message.copy, message.text)
+        app.send_message('me', 'fuck')
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.message_id, message.text)
         
