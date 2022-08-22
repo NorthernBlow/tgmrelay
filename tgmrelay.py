@@ -9,7 +9,7 @@ config = {
     "api_id": 2843096,
     "api_hash": "b3fe86810322a24fc277cde79cd318ca",
     "source_chat_id": -1001461338272,
-    "target_chat_id": 132669168,
+    "target_chat_id": -1001597517662,
 }
 
 class Messages:
@@ -24,6 +24,7 @@ class Messages:
         with self.connection:
             result = self.cursor.execute("SELECT * FROM messages WHERE target=? AND source=? AND message=?;",
                                          (target, source, message)).fetchall()
+            print(result)
             return bool(len(result))
 
     def add(self, target, source, message: int, text: str):
@@ -33,33 +34,31 @@ class Messages:
     def close(self):
         self.connection.close()
 
-app = Client(config["name"], config["api_id"], config["api_hash"],)
+app = Client(config["name"], config["api_id"], config["api_hash"], system_version='Arch', no_updates=False, hide_password=True)
 messages = Messages(config["messages"])
 with app:
     print(app.export_session_string())
 
 
-@app.on_message(filters.chat(config["source_chat_id"]))
+@app.on_message(filters.chat(config["source_chat_id"]),)
 def get_post(client, message):
+    print('it works')
     # relay only new messages, for this purpose we store all past messages in db
-    if not messages.exists(config["target_chat_id"], config["source_chat_id"], config["messages"]):
+    if not messages.exists(config["target_chat_id"], message.id, message.text):
         # relay message to target chat
-        app.send_message('me', 'fuck')
+        app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
         # store message in the database
-        messages.add(config["target_chat_id"], message.chat.id, message.message_id, message.text)
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
         
 ###def print_copy_text(message.text, message.copy) 
 
 def main():
-    try:
-        with open("config.json", "r") as f:
-            config = json.load(f)
-    except OSError:
-        print("config.json not found")
-        pass
+    pass
 
     print(datetime.today().strftime(f'%H:%M:%S | Started.'))
     app.run()
+    #get_post(app, 'message')
+
 
 
 if __name__ == '__main__':
