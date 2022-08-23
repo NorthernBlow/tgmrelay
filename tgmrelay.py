@@ -40,7 +40,33 @@ with app:
     print(app.export_session_string())
 
 
-@app.on_message(filters.chat(config["source_chat_id"]),)
+@app.on_message(filters.chat(config["source_chat_id"]))
+def filtersnext(client, self, target, source, message: int, messageselffilter):
+    filters.create()
+        with Messages.database.connection:
+            result = self.cursor.execute("SELECT * FROM messages WHERE target=? AND source=? AND message=?;",
+                                         (target, source, message)).fetchall()
+            print(result)
+            return bool(len(result))
+
+    if not messages.exists(config["target_chat_id"], message.id, message.text):
+        # relay message to target chat
+        app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
+        # store message in the database
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+
+filters.text_filter(config["messages"])
+
+
+
+
+@app.on_callback_query(filters.text_filter(config["messages"]))
+
+
+async def pyrogram_data(_, query):
+    query.answer("it works!")
+
+
 def get_post(client, message):
     print('it works')
     # relay only new messages, for this purpose we store all past messages in db
