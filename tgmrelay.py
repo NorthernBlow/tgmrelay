@@ -5,6 +5,9 @@ from datetime import datetime
 import sqlite3
 import json, string
 import os
+import requests
+import pprint
+from weather_config import openweather
 
 config = {
     "name": "tgmrelay",
@@ -14,6 +17,8 @@ config = {
     "source_chat_id": -1001461338272,
     "target_chat_id": -1001597517662,
 }
+
+
 
 class Messages:
     def __init__(self, database):
@@ -54,7 +59,6 @@ async def filterpurge(client, message):
 
 
 
-
 @app.on_message(filters.chat(config["source_chat_id"]))
 def get_post(client, message):
     print('it works')
@@ -65,7 +69,23 @@ def get_post(client, message):
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
         
-###def print_copy_text(message.text, message.copy) 
+###def print_copy_text(message.text, message.copy)
+def weather(openweather):
+    try:
+        r = requests.get(
+            f"https://api.openweathermap.org/data/2.5/weather?lat=33.44&lon=-94.04&appid={openweather}"
+        )
+
+        data = r.json()
+        print(r)
+
+        city = data['Kursk']
+    except Exception as ex:
+        print(ex)
+        print('Hiiiiiiiiii')
+
+
+weather(openweather)
 
 def main():
     pass
