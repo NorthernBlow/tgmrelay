@@ -50,6 +50,7 @@ with app:
 
 @app.on_message(filters.chat(config["source_chat_id"]))
 async def filterpurge(client, message):
+    # проводим проверку с помощью генератора множеств
     if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
         .intersection(set(json.load(open('keywords.json')))) != set():
         await app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
@@ -79,7 +80,15 @@ def weather(openweather):
         data = r.json()
         print(r)
 
-        city = data['Kursk']
+        city = data["name"]
+        cur_weather = data["main"]["temp"]
+        humidity = data["main"]["humidity"]
+        pressure = data["main"]["pressure"]
+        wind = data["wind"]["speed"]
+
+        print(f'Погода в Курске: {city}\nТемпература: {cur_weather}C\n'
+              f'Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст\nВетер: {wind}\n'
+              f'Хорошего дня!')
     except Exception as ex:
         print(ex)
         print('Hiiiiiiiiii')
