@@ -1,7 +1,10 @@
+import string
+
 from pyrogram import Client, filters
 from datetime import datetime
 import sqlite3
-import json
+import json, string
+import os
 
 config = {
     "name": "tgmrelay",
@@ -41,32 +44,18 @@ with app:
 
 
 @app.on_message(filters.chat(config["source_chat_id"]))
-def filtersnext(client, self, target, source, message: int, messageselffilter):
-    filters.create()
-        with Messages.database.connection:
-            result = self.cursor.execute("SELECT * FROM messages WHERE target=? AND source=? AND message=?;",
-                                         (target, source, message)).fetchall()
-            print(result)
-            return bool(len(result))
-
-    if not messages.exists(config["target_chat_id"], message.id, message.text):
-        # relay message to target chat
-        app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
+async def filterpurge(client, message):
+    if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('keywords.json')))) != set():
+        await app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
+        print(message)
         # store message in the database
-        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
-
-filters.text_filter(config["messages"])
+        await messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
 
 
 
 
-@app.on_callback_query(filters.text_filter(config["messages"]))
-
-
-async def pyrogram_data(_, query):
-    query.answer("it works!")
-
-
+@app.on_message(filters.chat(config["source_chat_id"]))
 def get_post(client, message):
     print('it works')
     # relay only new messages, for this purpose we store all past messages in db
