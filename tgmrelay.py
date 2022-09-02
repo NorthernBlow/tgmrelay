@@ -1,13 +1,10 @@
-import string
-
 from pyrogram import Client, filters
 from datetime import datetime
 import sqlite3
 import json, string
-import os
 import requests
-import pprint
 from weather_config import openweather
+from pprint import pprint
 
 config = {
     "name": "tgmrelay",
@@ -17,7 +14,6 @@ config = {
     "source_chat_id": -1001461338272,
     "target_chat_id": -1001597517662,
 }
-
 
 
 class Messages:
@@ -56,7 +52,38 @@ async def filterpurge(client, message):
         await app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
         print(message)
         # store message in the database
-        await messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+
+
+async def weather(client, message, city, openweather):
+    lon = 36.1873
+    lat = 51.73
+    try:
+        async with app:
+             r = requests.get(
+                 f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&dt=1586468027&appid={openweather}&units=metric"
+             )
+
+             data = r.json()
+             pprint(data)
+
+             feelslike = data["main"]["feels_like"]
+        #city = data["name"]
+             cur_weather = data["main"]["temp"]
+             humidity = data["main"]["humidity"]
+             pressure = data["main"]["pressure"]
+             wind = data["wind"]["speed"]
+             sunsetter = datetime.fromtimestamp(data["sys"]["sunrise"])
+
+
+             await app.send_message(config["target_chat_id"], f'Погода в {city}e\nТемпература: {cur_weather}C°\n'
+                  f'Ощущается как: {feelslike}C°\n'
+                  f'Восход солнца: {sunsetter}\n'
+                  f'Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст\nВетер: {wind} м/сек\n'
+                  f'Хорошего дня!')
+    except Exception as ex:
+            print(ex)
+            print('Hiiiiiiiiii')
 
 
 
@@ -70,37 +97,45 @@ def get_post(client, message):
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
         
-###def print_copy_text(message.text, message.copy)
-def weather(openweather):
+@app.on_message(filters.chat(config["target_chat_id"]))
+async def weather(client, message, city, openweather):
+    lon = 36.1873
+    lat = 51.73
     try:
-        r = requests.get(
-            f"https://api.openweathermap.org/data/2.5/weather?lat=33.44&lon=-94.04&appid={openweather}"
-        )
+        async with app:
+             r = requests.get(
+                 f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&dt=1586468027&appid={openweather}&units=metric"
+             )
 
-        data = r.json()
-        print(r)
+             data = r.json()
+             pprint(data)
 
-        city = data["name"]
-        cur_weather = data["main"]["temp"]
-        humidity = data["main"]["humidity"]
-        pressure = data["main"]["pressure"]
-        wind = data["wind"]["speed"]
+             feelslike = data["main"]["feels_like"]
+        #city = data["name"]
+             cur_weather = data["main"]["temp"]
+             humidity = data["main"]["humidity"]
+             pressure = data["main"]["pressure"]
+             wind = data["wind"]["speed"]
+             sunsetter = datetime.fromtimestamp(data["sys"]["sunrise"])
 
-        print(f'Погода в Курске: {city}\nТемпература: {cur_weather}C\n'
-              f'Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст\nВетер: {wind}\n'
-              f'Хорошего дня!')
+
+             await app.send_message(config["target_chat_id"], f'Погода в {city}e\nТемпература: {cur_weather}C°\n'
+                  f'Ощущается как: {feelslike}C°\n'
+                  f'Восход солнца: {sunsetter}\n'
+                  f'Влажность: {humidity}%\nДавление: {pressure} мм.рт.ст\nВетер: {wind} м/сек\n'
+                  f'Хорошего дня!')
     except Exception as ex:
-        print(ex)
-        print('Hiiiiiiiiii')
+            print(ex)
+            print('Hiiiiiiiiii')
 
 
-weather(openweather)
+
 
 def main():
-    pass
-
+    city = "Курск"
     print(datetime.today().strftime(f'%H:%M:%S | Started.'))
     app.run()
+    weather(city, openweather)
     #get_post(app, 'message')
 
 
