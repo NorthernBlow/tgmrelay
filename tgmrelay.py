@@ -13,6 +13,11 @@ config = {
     "api_id": 2843096,
     "api_hash": "b3fe86810322a24fc277cde79cd318ca",
     "source_chat_id": -1001461338272,
+    "source_chat_kursk_nov": -1001419844897,
+    "source_chat_kurskbomond": -1001421494607,
+    "source_chat_Kurskk_dtp": -1001279355664,
+    "source_chat_Kursk_gide": -1001322836648,
+    "source_chat_zhest_kursk_46": -1001449911101,
     "target_chat_id": -1001597517662,
 }
 
@@ -51,7 +56,7 @@ async def filterpurge(client, message):
     if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
         .intersection(set(json.load(open('keywords.json')))) != set():
         await app.forward_messages(config["target_chat_id"], config["source_chat_id"], message.id, message.text)
-        print(message)
+        print(message.date)
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
 
@@ -62,7 +67,7 @@ async def test():
         await app.send_message("me", "Hi!")
 
 
-@app.on_message(filters.chat(config["target_chat_id"]))
+@app.on_message()
 def weather(city, openweather):
     lon = 36.1873
     lat = 51.73
@@ -107,7 +112,6 @@ def main():
     app.run()
     with app:
         city = "Курск"
-        test()
         weather(city, openweather)
 
 
