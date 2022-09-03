@@ -13,7 +13,7 @@ config = {
     "api_id": 2843096,
     "api_hash": "b3fe86810322a24fc277cde79cd318ca",
     "source_chat_id": -1001461338272,
-    "source_chat_kursk_nov": -1001419844897,
+    "source_chat_kursk_nov": -1001651474042,
     "source_chat_kurskbomond": -1001421494607,
     "source_chat_Kurskk_dtp": -1001279355664,
     "source_chat_Kursk_gide": -1001322836648,
@@ -60,6 +60,55 @@ async def filterpurge(client, message):
         # store message in the database
         messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
 
+@app.on_message(filters.chat(config["source_chat_kursk_nov"]))
+async def filterpurge1(client, message):
+    # проводим проверку с помощью генератора множеств
+    if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('keywords.json')))) != set():
+        await app.forward_messages(config["target_chat_id"], config["source_chat_kursk_nov"], message.id, message.text)
+        print(message.date)
+        # store message in the database
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+
+@app.on_message(filters.chat(config["source_chat_kurskbomond"]))
+async def filterpurge2(client, message):
+    # проводим проверку с помощью генератора множеств
+    if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('keywords.json')))) != set():
+        await app.forward_messages(config["target_chat_id"], config["source_chat_kurskbomond"], message.id, message.text)
+        print(message.date)
+        # store message in the database
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+
+@app.on_message(filters.chat(config["source_chat_Kurskk_dtp"]))
+async def filterpurge3(client, message):
+    # проводим проверку с помощью генератора множеств
+    if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('keywords.json')))) != set():
+        await app.forward_messages(config["target_chat_id"], config["source_chat_Kurskk_dtp"], message.id, message.text)
+        print(message.date)
+        # store message in the database
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+
+@app.on_message(filters.chat(config["source_chat_Kursk_gide"]))
+async def filterpurge4(client, message):
+    # проводим проверку с помощью генератора множеств
+    if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('keywords.json')))) != set():
+        await app.forward_messages(config["target_chat_id"], config["source_chat_Kursk_gide"], message.id, message.text)
+        print(message.date)
+        # store message in the database
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
+
+@app.on_message(filters.chat(config["source_chat_zhest_kursk_46"]))
+async def filterpurge5(client, message):
+    # проводим проверку с помощью генератора множеств
+    if {i.lower().translate(str.maketrans("", "", string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('keywords.json')))) != set():
+        await app.forward_messages(config["target_chat_id"], config["source_chat_zhest_kursk_46"], message.id, message.text)
+        print(message.date)
+        # store message in the database
+        messages.add(config["target_chat_id"], message.chat.id, message.id, message.text)
 
 
 async def test():
